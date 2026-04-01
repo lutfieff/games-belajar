@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belajar Matematika 🧮</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.header {
+  text-align: center;
+  padding: 20px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+.header h1 { font-size: 2.2em; }
+.header p { font-size: 1.1em; margin-top: 5px; }
+.home-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: white;
+  text-decoration: none;
+  font-size: 1em;
+  opacity: 0.8;
+}
+.home-link:hover { opacity: 1; }
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1em;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+.tab-btn:hover { transform: scale(1.1); }
+.tab-btn.active { transform: scale(1.1); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+.tab-hitung { background: #e74c3c; }
+.tab-tebak { background: #3498db; }
+.tab-urut { background: #9b59b6; }
+.tab-waktu { background: #f39c12; }
+
+.section { display: none; padding: 20px; max-width: 700px; margin: 0 auto; }
+.section.active { display: block; }
+
+/* Shared quiz styles */
+.quiz-area { text-align: center; padding: 10px; }
+.question-box {
+  background: white;
+  border-radius: 25px;
+  padding: 30px;
+  margin: 15px auto;
+  max-width: 500px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+.question-text {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+.question-sub {
+  font-size: 1.2em;
+  color: #666;
+  margin-bottom: 20px;
+}
+.answer-input {
+  font-size: 2em;
+  font-family: inherit;
+  text-align: center;
+  width: 120px;
+  padding: 10px;
+  border: 3px solid #ddd;
+  border-radius: 15px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.answer-input:focus { border-color: #3498db; }
+.submit-btn {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 12px 25px;
+  font-size: 1.3em;
+  font-family: inherit;
+  border: none;
+  border-radius: 15px;
+  background: #2ecc71;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+.submit-btn:hover { transform: scale(1.05); background: #27ae60; }
+
+.options-grid {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+.opt-btn {
+  padding: 15px 28px;
+  font-size: 1.5em;
+  font-family: inherit;
+  border: none;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: white;
+  color: #333;
+  font-weight: bold;
+  min-width: 80px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.opt-btn:hover { transform: scale(1.1); }
+.opt-btn.correct { background: #2ecc71 !important; color: white !important; animation: bounce 0.5s ease; }
+.opt-btn.wrong { background: #e74c3c !important; color: white !important; animation: shake 0.5s ease; }
+
+.feedback {
+  font-size: 1.5em;
+  margin: 15px 0;
+  font-weight: bold;
+  min-height: 40px;
+}
+.feedback.benar { color: #2ecc71; }
+.feedback.salah { color: #e74c3c; }
+
+.score-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 500px;
+  margin: 10px auto;
+  color: white;
+  font-size: 1.1em;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+.streak { color: #feca57; }
+.next-btn {
+  margin-top: 15px;
+  padding: 12px 30px;
+  font-size: 1.1em;
+  font-family: inherit;
+  border: none;
+  border-radius: 50px;
+  background: #feca57;
+  color: #333;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+.next-btn:hover { transform: scale(1.1); }
+
+/* Difficulty selector */
+.diff-selector {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+.diff-btn {
+  padding: 8px 16px;
+  border: 2px solid white;
+  border-radius: 50px;
+  background: transparent;
+  color: white;
+  font-family: inherit;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.diff-btn:hover, .diff-btn.active { background: white; color: #11998e; }
+
+/* Number line for ordering */
+.number-slots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+.num-slot {
+  width: 60px; height: 60px;
+  border: 3px dashed #ccc;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  background: #f8f8f8;
+  color: #333;
+}
+.num-slot.filled { border-style: solid; border-color: #2ecc71; background: #d5f5e3; }
+.num-slot.wrong-slot { border-color: #e74c3c; background: #fadbd8; }
+
+.num-choices {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+.num-choice {
+  width: 55px; height: 55px;
+  border: none;
+  border-radius: 15px;
+  font-size: 1.4em;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: #3498db;
+  color: white;
+}
+.num-choice:hover { transform: scale(1.1); }
+.num-choice:disabled { opacity: 0.3; cursor: default; transform: none; }
+
+/* Timer challenge */
+.timer-display {
+  font-size: 3em;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  margin: 10px 0;
+}
+.timer-display.warning { color: #e74c3c; animation: pulse 0.5s ease infinite; }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+.start-timer-btn {
+  padding: 15px 40px;
+  font-size: 1.3em;
+  font-family: inherit;
+  border: none;
+  border-radius: 50px;
+  background: white;
+  color: #f39c12;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+.start-timer-btn:hover { transform: scale(1.1); }
+
+/* Animations */
+@keyframes bounce { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+.celebration { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+.confetti {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  animation: confettiFall 2s ease-out forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧮 Belajar Matematika</h1>
+  <p>Untuk anak kelas 1-2 SD</p>
+  <a href="index.html" class="home-link">🏠 Kembali ke Beranda</a>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn tab-hitung active" onclick="showTab('hitung')">➕ Hitung</button>
+  <button class="tab-btn tab-tebak" onclick="showTab('tebak')">🎯 Tebak</button>
+  <button class="tab-btn tab-urut" onclick="showTab('urut')">🔢 Urutkan</button>
+  <button class="tab-btn tab-waktu" onclick="showTab('waktu')">⏱️ Tantangan</button>
+</div>
+
+<div id="sec-hitung" class="section active"></div>
+<div id="sec-tebak" class="section"></div>
+<div id="sec-urut" class="section"></div>
+<div id="sec-waktu" class="section"></div>
+
+<div class="celebration" id="celebration"></div>
+
+<script>
+// === STATE ===
+let hitungScore = 0, hitungTotal = 0, hitungStreak = 0;
+let tebakScore = 0, tebakTotal = 0;
+let difficulty = 'mudah'; // mudah, sedang, sulit
+let timerInterval = null, timerScore = 0, timerTime = 60;
+
+// === HELPERS ===
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  document.querySelector('.tab-' + name).classList.add('active');
+  if (name === 'hitung') newHitung();
+  if (name === 'tebak') newTebak();
+  if (name === 'urut') newUrut();
+  if (name === 'waktu') renderWaktu();
+}
+
+function showCelebration() {
+  const cel = document.getElementById('celebration');
+  cel.innerHTML = '';
+  const colors = ['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#2ed573'];
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    c.style.width = c.style.height = (Math.random() * 8 + 6) + 'px';
+    cel.appendChild(c);
+  }
+  setTimeout(() => cel.innerHTML = '', 2500);
+}
+
+function getRange() {
+  if (difficulty === 'mudah') return [1, 10];
+  if (difficulty === 'sedang') return [1, 50];
+  return [1, 100];
+}
+
+function diffHTML(current) {
+  return `<div class="diff-selector">
+    ${['mudah','sedang','sulit'].map(d =>
+      `<button class="diff-btn ${current===d?'active':''}" onclick="setDiff('${d}')">${d === 'mudah' ? '😊 Mudah' : d === 'sedang' ? '🤔 Sedang' : '🔥 Sulit'}</button>`
+    ).join('')}
+  </div>`;
+}
+
+function setDiff(d) {
+  difficulty = d;
+  hitungScore = 0; hitungTotal = 0; hitungStreak = 0;
+  tebakScore = 0; tebakTotal = 0;
+  const active = document.querySelector('.section.active');
+  if (active.id === 'sec-hitung') newHitung();
+  else if (active.id === 'sec-tebak') newTebak();
+  else if (active.id === 'sec-urut') newUrut();
+}
+
+// === 1. HITUNG (Penjumlahan, Pengurangan, Perkalian) ===
+function newHitung() {
+  const el = document.getElementById('sec-hitung');
+  const [min, max] = getRange();
+  const ops = difficulty === 'sulit' ? ['+', '-', '×'] : ['+', '-'];
+  const op = ops[rand(0, ops.length - 1)];
+
+  let a, b, answer;
+  if (op === '+') {
+    a = rand(min, max); b = rand(min, max);
+    answer = a + b;
+  } else if (op === '-') {
+    a = rand(min, max); b = rand(min, a); // ensure positive result
+    answer = a - b;
+  } else {
+    a = rand(1, 10); b = rand(1, 10);
+    answer = a * b;
+  }
+
+  el.innerHTML = diffHTML(difficulty) +
+    `<div class="score-bar">
+      <span>⭐ Benar: ${hitungScore}/${hitungTotal}</span>
+      <span class="streak">🔥 Streak: ${hitungStreak}</span>
+    </div>
+    <div class="quiz-area">
+      <div class="question-box">
+        <div class="question-text">${a} ${op} ${b} = ?</div>
+        <div>
+          <input type="number" class="answer-input" id="hitungAnswer" autofocus
+            onkeydown="if(event.key==='Enter')checkHitung(${answer})">
+          <button class="submit-btn" onclick="checkHitung(${answer})">✓</button>
+        </div>
+        <div class="feedback" id="hitungFeedback"></div>
+      </div>
+    </div>`;
+  setTimeout(() => {
+    const inp = document.getElementById('hitungAnswer');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function checkHitung(correct) {
+  const inp = document.getElementById('hitungAnswer');
+  const fb = document.getElementById('hitungFeedback');
+  const val = parseInt(inp.value);
+  if (isNaN(val)) return;
+  inp.disabled = true;
+
+  hitungTotal++;
+  if (val === correct) {
+    hitungScore++;
+    hitungStreak++;
+    fb.textContent = '🎉 Benar!';
+    fb.className = 'feedback benar';
+    showCelebration();
+  } else {
+    hitungStreak = 0;
+    fb.textContent = `❌ Jawabannya ${correct}`;
+    fb.className = 'feedback salah';
+  }
+
+  const area = document.querySelector('#sec-hitung .quiz-area');
+  const btn = document.createElement('button');
+  btn.className = 'next-btn';
+  btn.textContent = '➡️ Soal Berikutnya';
+  btn.onclick = newHitung;
+  area.appendChild(btn);
+}
+
+// === 2. TEBAK ANGKA (pilihan ganda) ===
+function newTebak() {
+  const el = document.getElementById('sec-tebak');
+  const [min, max] = getRange();
+  const ops = difficulty === 'sulit' ? ['+', '-', '×'] : ['+', '-'];
+  const op = ops[rand(0, ops.length - 1)];
+
+  let a, b, answer;
+  if (op === '+') {
+    a = rand(min, max); b = rand(min, max);
+    answer = a + b;
+  } else if (op === '-') {
+    a = rand(min, max); b = rand(min, a);
+    answer = a - b;
+  } else {
+    a = rand(1, 10); b = rand(1, 10);
+    answer = a * b;
+  }
+
+  // Generate options
+  let options = new Set([answer]);
+  while (options.size < 4) {
+    const off = rand(-5, 5);
+    if (off !== 0) options.add(answer + off);
+  }
+  const shuffled = [...options].sort(() => Math.random() - 0.5);
+
+  el.innerHTML = diffHTML(difficulty) +
+    `<div class="score-bar">
+      <span>⭐ Benar: ${tebakScore}/${tebakTotal}</span>
+    </div>
+    <div class="quiz-area">
+      <div class="question-box">
+        <div class="question-text">${a} ${op} ${b} = ?</div>
+        <div class="options-grid">
+          ${shuffled.map(o => `<button class="opt-btn" onclick="checkTebak(this,${o},${answer})">${o}</button>`).join('')}
+        </div>
+        <div class="feedback" id="tebakFeedback"></div>
+      </div>
+    </div>`;
+}
+
+function checkTebak(btn, val, correct) {
+  document.querySelectorAll('#sec-tebak .opt-btn').forEach(b => b.disabled = true);
+  tebakTotal++;
+
+  if (val === correct) {
+    btn.classList.add('correct');
+    tebakScore++;
+    document.getElementById('tebakFeedback').textContent = '🎉 Benar!';
+    document.getElementById('tebakFeedback').className = 'feedback benar';
+    showCelebration();
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('#sec-tebak .opt-btn').forEach(b => {
+      if (parseInt(b.textContent) === correct) b.classList.add('correct');
+    });
+    document.getElementById('tebakFeedback').textContent = `❌ Jawabannya ${correct}`;
+    document.getElementById('tebakFeedback').className = 'feedback salah';
+  }
+
+  const area = document.querySelector('#sec-tebak .quiz-area');
+  const next = document.createElement('button');
+  next.className = 'next-btn';
+  next.textContent = '➡️ Soal Berikutnya';
+  next.onclick = newTebak;
+  area.appendChild(next);
+}
+
+// === 3. URUTKAN ANGKA ===
+let urutAnswer = [], urutCurrent = [];
+
+function newUrut() {
+  const el = document.getElementById('sec-urut');
+  const count = difficulty === 'mudah' ? 5 : difficulty === 'sedang' ? 7 : 9;
+  const [min, max] = getRange();
+
+  const nums = new Set();
+  while (nums.size < count) nums.add(rand(min, max));
+  urutAnswer = [...nums].sort((a, b) => a - b);
+  urutCurrent = [];
+  const shuffled = [...nums].sort(() => Math.random() - 0.5);
+
+  renderUrut(el, shuffled);
+}
+
+function renderUrut(el, choices) {
+  el.innerHTML = diffHTML(difficulty) +
+    `<div class="quiz-area">
+      <div class="question-box">
+        <div class="question-sub">Urutkan dari yang terkecil:</div>
+        <div class="number-slots" id="urutSlots">
+          ${urutAnswer.map((_, i) => {
+            const filled = urutCurrent[i] !== undefined;
+            return `<div class="num-slot ${filled ? 'filled' : ''}">${filled ? urutCurrent[i] : ''}</div>`;
+          }).join('')}
+        </div>
+        <div class="num-choices" id="urutChoices">
+          ${choices.map(n => {
+            const used = urutCurrent.includes(n);
+            return `<button class="num-choice" ${used ? 'disabled' : ''} onclick="pickUrut(${n})">${n}</button>`;
+          }).join('')}
+        </div>
+        <div class="feedback" id="urutFeedback"></div>
+      </div>
+    </div>`;
+}
+
+function pickUrut(n) {
+  const idx = urutCurrent.length;
+  const expected = urutAnswer[idx];
+
+  if (n === expected) {
+    urutCurrent.push(n);
+    if (urutCurrent.length === urutAnswer.length) {
+      showCelebration();
+      document.getElementById('urutFeedback').textContent = '🎉 Sempurna!';
+      document.getElementById('urutFeedback').className = 'feedback benar';
+      const area = document.querySelector('#sec-urut .quiz-area');
+      const btn = document.createElement('button');
+      btn.className = 'next-btn';
+      btn.textContent = '➡️ Coba Lagi';
+      btn.onclick = newUrut;
+      area.appendChild(btn);
+    }
+  } else {
+    document.getElementById('urutFeedback').textContent = '❌ Coba lagi, pilih yang paling kecil!';
+    document.getElementById('urutFeedback').className = 'feedback salah';
+    setTimeout(() => {
+      document.getElementById('urutFeedback').textContent = '';
+    }, 1500);
+    return;
+  }
+
+  // Re-render slots and choices
+  const remaining = urutAnswer.filter(x => !urutCurrent.includes(x));
+  const allChoices = [...urutAnswer].sort(() => Math.random() - 0.5);
+  renderUrut(document.getElementById('sec-urut'), allChoices);
+}
+
+// === 4. TANTANGAN WAKTU ===
+function renderWaktu() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  timerScore = 0;
+  timerTime = 60;
+
+  const el = document.getElementById('sec-waktu');
+  el.innerHTML = `<div class="quiz-area">
+    <div class="question-box">
+      <div class="question-sub">Jawab sebanyak mungkin dalam 60 detik!</div>
+      <div style="font-size:4em;margin:20px 0">⏱️</div>
+      <button class="start-timer-btn" onclick="startTimer()">🚀 Mulai!</button>
+    </div>
+  </div>`;
+}
+
+function startTimer() {
+  timerScore = 0;
+  timerTime = 60;
+  timerInterval = setInterval(() => {
+    timerTime--;
+    const td = document.getElementById('timerDisp');
+    if (td) {
+      td.textContent = timerTime + 's';
+      if (timerTime <= 10) td.classList.add('warning');
+    }
+    if (timerTime <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      showTimerResult();
+    }
+  }, 1000);
+  nextTimerQ();
+}
+
+function nextTimerQ() {
+  const el = document.getElementById('sec-waktu');
+  const a = rand(1, 20), b = rand(1, 20);
+  const op = Math.random() > 0.5 ? '+' : '-';
+  let answer;
+  let qa, qb;
+  if (op === '+') {
+    qa = a; qb = b; answer = a + b;
+  } else {
+    qa = Math.max(a, b); qb = Math.min(a, b); answer = qa - qb;
+  }
+
+  el.innerHTML = `<div class="quiz-area">
+    <div class="timer-display ${timerTime <= 10 ? 'warning' : ''}" id="timerDisp">${timerTime}s</div>
+    <div class="score-bar"><span>⭐ Jawaban benar: ${timerScore}</span></div>
+    <div class="question-box">
+      <div class="question-text">${qa} ${op} ${qb} = ?</div>
+      <div>
+        <input type="number" class="answer-input" id="timerAnswer"
+          onkeydown="if(event.key==='Enter')checkTimer(${answer})" autofocus>
+        <button class="submit-btn" onclick="checkTimer(${answer})">✓</button>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(() => {
+    const inp = document.getElementById('timerAnswer');
+    if (inp) inp.focus();
+  }, 50);
+}
+
+function checkTimer(correct) {
+  const inp = document.getElementById('timerAnswer');
+  const val = parseInt(inp.value);
+  if (isNaN(val)) return;
+  if (val === correct) {
+    timerScore++;
+    showCelebration();
+  }
+  nextTimerQ();
+}
+
+function showTimerResult() {
+  const el = document.getElementById('sec-waktu');
+  let emoji, msg;
+  if (timerScore >= 20) { emoji = '🏆'; msg = 'Luar biasa!'; }
+  else if (timerScore >= 10) { emoji = '🌟'; msg = 'Hebat!'; }
+  else if (timerScore >= 5) { emoji = '👍'; msg = 'Bagus!'; }
+  else { emoji = '💪'; msg = 'Terus berlatih!'; }
+
+  el.innerHTML = `<div class="quiz-area">
+    <div class="question-box">
+      <div style="font-size:4em">${emoji}</div>
+      <div class="question-text">${timerScore} Benar</div>
+      <div class="question-sub">${msg}</div>
+      <button class="start-timer-btn" onclick="startTimer()">🔄 Main Lagi</button>
+    </div>
+  </div>`;
+}
+
+// === INIT ===
+newHitung();
+</script>
+</body>
+</html>
