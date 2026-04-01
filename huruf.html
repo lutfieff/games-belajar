@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belajar Huruf & Kata 🎨</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.header {
+  text-align: center;
+  padding: 20px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+.header h1 { font-size: 2.2em; }
+.header p { font-size: 1.1em; margin-top: 5px; }
+
+/* Navigation tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.2em;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+.tab-btn:hover { transform: scale(1.1); }
+.tab-btn.active { transform: scale(1.1); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+.tab-huruf { background: #ff6b6b; }
+.tab-kata { background: #feca57; color: #333 !important; }
+.tab-kuis { background: #48dbfb; }
+
+/* Sections */
+.section { display: none; padding: 20px; max-width: 900px; margin: 0 auto; }
+.section.active { display: block; }
+
+/* Letter grid */
+.letter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+  padding: 10px;
+}
+.letter-card {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5em;
+  font-weight: bold;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+}
+.letter-card:hover { transform: scale(1.15) rotate(-3deg); }
+.letter-card:active { transform: scale(0.95); }
+.letter-card.pop {
+  animation: popAnim 0.5s ease;
+}
+@keyframes popAnim {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3) rotate(5deg); }
+  100% { transform: scale(1); }
+}
+
+/* Word cards */
+.word-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 15px;
+  padding: 10px;
+}
+.word-card {
+  background: white;
+  border-radius: 20px;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.word-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+.word-card:active { transform: scale(0.95); }
+.word-emoji { font-size: 3em; }
+.word-text {
+  font-size: 1.4em;
+  font-weight: bold;
+  margin-top: 8px;
+  color: #333;
+}
+.word-letter {
+  font-size: 0.9em;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* Quiz section */
+.quiz-area {
+  text-align: center;
+  padding: 20px;
+}
+.quiz-emoji { font-size: 6em; margin: 20px 0; }
+.quiz-question {
+  font-size: 1.5em;
+  color: white;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+.quiz-options {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+.quiz-opt {
+  padding: 15px 30px;
+  font-size: 1.5em;
+  font-family: inherit;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: white;
+  color: #333;
+  font-weight: bold;
+  min-width: 120px;
+}
+.quiz-opt:hover { transform: scale(1.1); }
+.quiz-opt.correct {
+  background: #2ecc71 !important;
+  color: white !important;
+  animation: bounce 0.5s ease;
+}
+.quiz-opt.wrong {
+  background: #e74c3c !important;
+  color: white !important;
+  animation: shake 0.5s ease;
+}
+@keyframes bounce {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+.score-display {
+  font-size: 1.3em;
+  color: white;
+  margin: 15px 0;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+.next-btn {
+  margin-top: 20px;
+  padding: 12px 30px;
+  font-size: 1.2em;
+  font-family: inherit;
+  border: none;
+  border-radius: 50px;
+  background: #feca57;
+  color: #333;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+.next-btn:hover { transform: scale(1.1); }
+
+/* Floating decorations */
+.floating {
+  position: fixed;
+  font-size: 2em;
+  opacity: 0.3;
+  pointer-events: none;
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+/* Celebration */
+.celebration {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+.confetti {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  animation: confettiFall 2s ease-out forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Category filter */
+.category-filter {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+.cat-btn {
+  padding: 8px 16px;
+  border: 2px solid white;
+  border-radius: 50px;
+  background: transparent;
+  color: white;
+  font-family: inherit;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.cat-btn:hover, .cat-btn.active {
+  background: white;
+  color: #764ba2;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🌈 Belajar Huruf & Kata</h1>
+  <p>Yuk belajar sambil bermain!</p>
+  <a href="index.html" style="display:inline-block;margin-top:8px;color:white;text-decoration:none;font-size:1em;opacity:0.8">🏠 Beranda</a> <a href="matematika.html" style="display:inline-block;margin-top:8px;color:white;text-decoration:none;font-size:1em;opacity:0.8">🧮 Belajar Matematika →</a>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn tab-huruf active" onclick="showSection('huruf')" aria-label="Belajar Huruf">🔤 Huruf</button>
+  <button class="tab-btn tab-kata" onclick="showSection('kata')" aria-label="Belajar Kata">📖 Kata</button>
+  <button class="tab-btn tab-kuis" onclick="showSection('kuis')" aria-label="Kuis">🎯 Kuis</button>
+</div>
+
+<div id="sec-huruf" class="section active"></div>
+<div id="sec-kata" class="section"></div>
+<div id="sec-kuis" class="section"></div>
+
+<div class="celebration" id="celebration"></div>
+
+<script>
+// === DATA ===
+const COLORS = [
+  '#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff',
+  '#5f27cd','#01a3a4','#f368e0','#ff6348','#2ed573',
+  '#1e90ff','#ff4757','#7bed9f','#70a1ff','#ffa502'
+];
+
+const WORDS = [
+  // Hewan
+  {word:'AYAM', emoji:'🐔', huruf:'A', kategori:'hewan'},
+  {word:'BEBEK', emoji:'🦆', huruf:'B', kategori:'hewan'},
+  {word:'CICAK', emoji:'🦎', huruf:'C', kategori:'hewan'},
+  {word:'DOMBA', emoji:'🐑', huruf:'D', kategori:'hewan'},
+  {word:'ELANG', emoji:'🦅', huruf:'E', kategori:'hewan'},
+  {word:'GAJAH', emoji:'🐘', huruf:'G', kategori:'hewan'},
+  {word:'HARIMAU', emoji:'🐯', huruf:'H', kategori:'hewan'},
+  {word:'IKAN', emoji:'🐟', huruf:'I', kategori:'hewan'},
+  {word:'JERAPAH', emoji:'🦒', huruf:'J', kategori:'hewan'},
+  {word:'KUCING', emoji:'🐱', huruf:'K', kategori:'hewan'},
+  {word:'LEBAH', emoji:'🐝', huruf:'L', kategori:'hewan'},
+  {word:'MONYET', emoji:'🐵', huruf:'M', kategori:'hewan'},
+  {word:'NAGA', emoji:'🐉', huruf:'N', kategori:'hewan'},
+  {word:'PANDA', emoji:'🐼', huruf:'P', kategori:'hewan'},
+  {word:'RUBAH', emoji:'🦊', huruf:'R', kategori:'hewan'},
+  {word:'SINGA', emoji:'🦁', huruf:'S', kategori:'hewan'},
+  {word:'TIKUS', emoji:'🐭', huruf:'T', kategori:'hewan'},
+  {word:'ULAR', emoji:'🐍', huruf:'U', kategori:'hewan'},
+  {word:'ZEBRA', emoji:'🦓', huruf:'Z', kategori:'hewan'},
+  // Buah
+  {word:'APEL', emoji:'🍎', huruf:'A', kategori:'buah'},
+  {word:'ANGGUR', emoji:'🍇', huruf:'A', kategori:'buah'},
+  {word:'JERUK', emoji:'🍊', huruf:'J', kategori:'buah'},
+  {word:'MANGGA', emoji:'🥭', huruf:'M', kategori:'buah'},
+  {word:'PISANG', emoji:'🍌', huruf:'P', kategori:'buah'},
+  {word:'SEMANGKA', emoji:'🍉', huruf:'S', kategori:'buah'},
+  {word:'STROBERI', emoji:'🍓', huruf:'S', kategori:'buah'},
+  {word:'LEMON', emoji:'🍋', huruf:'L', kategori:'buah'},
+  {word:'KELAPA', emoji:'🥥', huruf:'K', kategori:'buah'},
+  {word:'CERI', emoji:'🍒', huruf:'C', kategori:'buah'},
+  // Benda
+  {word:'BOLA', emoji:'⚽', huruf:'B', kategori:'benda'},
+  {word:'BUKU', emoji:'📚', huruf:'B', kategori:'benda'},
+  {word:'RUMAH', emoji:'🏠', huruf:'R', kategori:'benda'},
+  {word:'MOBIL', emoji:'🚗', huruf:'M', kategori:'benda'},
+  {word:'BULAN', emoji:'🌙', huruf:'B', kategori:'benda'},
+  {word:'BINTANG', emoji:'⭐', huruf:'B', kategori:'benda'},
+  {word:'PAYUNG', emoji:'☂️', huruf:'P', kategori:'benda'},
+  {word:'TOPI', emoji:'🎩', huruf:'T', kategori:'benda'},
+  {word:'KUNCI', emoji:'🔑', huruf:'K', kategori:'benda'},
+  {word:'WORTEL', emoji:'🥕', huruf:'W', kategori:'benda'},
+];
+
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+// === SPEECH ===
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'id-ID';
+  u.rate = 0.8;
+  u.pitch = 1.2;
+  window.speechSynthesis.speak(u);
+}
+
+// === TABS ===
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  document.querySelector('.tab-' + name).classList.add('active');
+  if (name === 'kuis') startQuiz();
+}
+
+// === HURUF SECTION ===
+function renderHuruf() {
+  const el = document.getElementById('sec-huruf');
+  let html = '<div class="letter-grid">';
+  LETTERS.forEach((l, i) => {
+    const c = COLORS[i % COLORS.length];
+    html += `<div class="letter-card" style="background:${c}" onclick="clickLetter(this,'${l}')" role="button" aria-label="Huruf ${l}" tabindex="0">${l}</div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function clickLetter(el, letter) {
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
+  speak(letter);
+  // Find a word starting with this letter
+  const match = WORDS.find(w => w.huruf === letter);
+  if (match) {
+    setTimeout(() => speak(letter + ' seperti ' + match.word), 600);
+  }
+}
+
+// === KATA SECTION ===
+let currentKategori = 'semua';
+
+function renderKata() {
+  const el = document.getElementById('sec-kata');
+  const filtered = currentKategori === 'semua' ? WORDS : WORDS.filter(w => w.kategori === currentKategori);
+
+  let html = '<div class="category-filter">';
+  ['semua','hewan','buah','benda'].forEach(k => {
+    const label = k === 'semua' ? '🌟 Semua' : k === 'hewan' ? '🐾 Hewan' : k === 'buah' ? '🍎 Buah' : '📦 Benda';
+    html += `<button class="cat-btn ${currentKategori===k?'active':''}" onclick="filterKata('${k}')">${label}</button>`;
+  });
+  html += '</div>';
+
+  html += '<div class="word-grid">';
+  filtered.forEach(w => {
+    html += `<div class="word-card" onclick="clickWord('${w.word}')" role="button" aria-label="${w.word}" tabindex="0">
+      <div class="word-emoji">${w.emoji}</div>
+      <div class="word-text">${w.word}</div>
+      <div class="word-letter">Huruf ${w.huruf}</div>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function filterKata(k) {
+  currentKategori = k;
+  renderKata();
+}
+
+function clickWord(word) {
+  speak(word);
+}
+
+// === KUIS SECTION ===
+let quizScore = 0;
+let quizTotal = 0;
+let quizCurrent = null;
+
+function startQuiz() {
+  quizScore = 0;
+  quizTotal = 0;
+  nextQuestion();
+}
+
+function nextQuestion() {
+  const el = document.getElementById('sec-kuis');
+  // Pick random word
+  quizCurrent = WORDS[Math.floor(Math.random() * WORDS.length)];
+
+  // Generate 3 wrong answers + 1 correct
+  let options = [quizCurrent.word];
+  while (options.length < 3) {
+    const rnd = WORDS[Math.floor(Math.random() * WORDS.length)];
+    if (!options.includes(rnd.word)) options.push(rnd.word);
+  }
+  // Shuffle
+  options.sort(() => Math.random() - 0.5);
+
+  let html = '<div class="quiz-area">';
+  html += `<div class="score-display">⭐ Skor: ${quizScore} / ${quizTotal}</div>`;
+  html += `<div class="quiz-emoji">${quizCurrent.emoji}</div>`;
+  html += `<div class="quiz-question">Ini gambar apa?</div>`;
+  html += '<div class="quiz-options">';
+  options.forEach(o => {
+    html += `<button class="quiz-opt" onclick="answerQuiz(this,'${o}')">${o}</button>`;
+  });
+  html += '</div></div>';
+  el.innerHTML = html;
+
+  speak('Ini gambar apa?');
+}
+
+function answerQuiz(btn, answer) {
+  // Disable all buttons
+  document.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+  quizTotal++;
+
+  if (answer === quizCurrent.word) {
+    btn.classList.add('correct');
+    quizScore++;
+    speak('Benar! Ini ' + quizCurrent.word);
+    showCelebration();
+  } else {
+    btn.classList.add('wrong');
+    // Highlight correct
+    document.querySelectorAll('.quiz-opt').forEach(b => {
+      if (b.textContent === quizCurrent.word) b.classList.add('correct');
+    });
+    speak('Belum tepat. Ini ' + quizCurrent.word);
+  }
+
+  // Update score
+  document.querySelector('.score-display').textContent = `⭐ Skor: ${quizScore} / ${quizTotal}`;
+
+  // Add next button
+  const area = document.querySelector('.quiz-area');
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'next-btn';
+  nextBtn.textContent = '➡️ Lanjut';
+  nextBtn.onclick = nextQuestion;
+  area.appendChild(nextBtn);
+}
+
+// === CELEBRATION ===
+function showCelebration() {
+  const cel = document.getElementById('celebration');
+  cel.innerHTML = '';
+  const colors = ['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#2ed573'];
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + '%';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    c.style.width = c.style.height = (Math.random() * 8 + 6) + 'px';
+    cel.appendChild(c);
+  }
+  setTimeout(() => cel.innerHTML = '', 2500);
+}
+
+// === INIT ===
+renderHuruf();
+renderKata();
+</script>
+</body>
+</html>
